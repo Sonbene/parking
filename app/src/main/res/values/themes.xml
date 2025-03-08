@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Parking" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorGreen</item>
+        <item name="colorAccent">@color/colorGreen</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme.Parking" parent="Base.Theme.Parking" />
+
+    !-- Button Style -->
+    <style name="ButtonStyle" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">#FF5733</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <style name="ButtonStyleCustom" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/colorGreen</item> <!-- Đặt màu xanh -->
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+</resources>

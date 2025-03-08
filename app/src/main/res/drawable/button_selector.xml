@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Khi nhấn vào nút -->
+    <item android:drawable="@drawable/bth_background_pressed" android:state_pressed="true"/>
+    <!-- Khi không nhấn vào nút -->
+    <item android:drawable="@drawable/bth_background"/>
+</selector>

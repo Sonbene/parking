@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Parking" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#FF5733</item>
+        <item name="colorAccent">#FF5733</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="colorButtonNormal">#FF5733</item> <!-- Màu nền của Button khi ở chế độ tối -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+    </style>
+</resources>

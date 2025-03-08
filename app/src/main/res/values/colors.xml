@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="button_normal">#ff6750a4</color>
+    <color name="button_pressed">#ff333333</color>
+    <color name="btnPrice">#ff6750a4</color>
+    <color name="colorGreen">#4CAF50</color>  <!-- Màu xanh -->
+    <color name="colorRed">#F44336</color>    <!-- Màu đỏ -->
+</resources>

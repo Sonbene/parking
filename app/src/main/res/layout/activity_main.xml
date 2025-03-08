@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <TextView
+        android:id="@+id/txtID"
+        android:layout_width="268dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="129dp"
+        android:background="@drawable/toggle_button"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/toggleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@drawable/toggle_button"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:weightSum="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Button chiếm 1/3 màn hình -->
+        <Button
+            android:id="@+id/txtThanhTien"
+            style="@style/Base.Theme.Parking"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Tiền"
+            android:textColor="@android:color/white"/>
+
+        <!-- TextView chiếm 2/3 màn hình -->
+        <TextView
+            android:id="@+id/txtBienSo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/capturedImageView"
+        android:layout_width="170dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:foreground="@drawable/textview_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/previewView" />
+
+    <ImageView
+        android:id="@+id/capturedImageView_Out"
+        android:layout_width="170dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:foreground="@drawable/textview_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/previewView" />
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="370dp"
+        android:layout_height="370dp"
+        android:layout_marginTop="50dp"
+        android:foreground="@drawable/textview_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.camera.view.PreviewView>
+
+    <Spinner
+        android:id="@+id/spinner_price"
+        android:layout_width="130dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="188dp"
+        android:background="@drawable/border_table"
+        android:entries="@array/price_options"
+        app:layout_constraintBottom_toBottomOf="@+id/toggleContainer"
+        app:layout_constraintStart_toEndOf="@+id/toggleContainer_mode" />
+
+    <TextView
+        android:id="@+id/time_in"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/toggle_button"
+        android:gravity="center"
+        android:text="Time In"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/time_out"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="80dp"
+        android:background="@drawable/toggle_button"
+        android:gravity="center"
+        android:text="Time Out"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <LinearLayout
+        android:id="@+id/toggleContainer_mode"
+        android:layout_width="226dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="180dp"
+        android:background="@drawable/toggle_button_2"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:weightSum="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/btnVao"
+            style="@style/ButtonStyleCustom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Vào"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btnRa"
+            style="@style/ButtonStyleCustom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Ra"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="128dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <!-- Nút bấm tròn -->
+        <Button
+            android:id="@+id/capture_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_circle"
+            android:elevation="5dp" />
+
+        <!-- Icon nằm giữa và trên nút -->
+        <ImageView
+            android:id="@+id/round"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_in_out" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#ff34b7a6"/>  <!-- Màu nền mặc định -->
+    <size android:width="80dp" android:height="80dp"/> <!-- Kích thước hình tròn -->
+</shape>

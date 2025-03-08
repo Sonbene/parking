@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Bo góc thành viên thuốc -->
+    <corners android:radius="50dp"/>
+
+    <!-- Màu nền (để transparent nếu chỉ muốn viền) -->
+    <solid android:color="@android:color/transparent"/>
+
+    <!-- Định dạng viền -->
+    <stroke android:width="4dp" android:color="#FF5733"/>
+
+    <!-- Padding để chữ không bị dính vào viền -->
+    <padding android:left="10dp" android:right="10dp" android:top="5dp" android:bottom="5dp"/>
+</shape>

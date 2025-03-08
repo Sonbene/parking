@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">parking</string>
+    <string name="auto_mode">Tự động</string>
+    <string name="manual_mode">Thủ công</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="todo">TODO</string>
+    <string-array name="price_options">
+        <item>4.000 VND</item>
+        <item>5.000 VND</item>
+        <item>6.000 VND</item>
+        <item>8.000 VND</item>
+        <item>10.000 VND</item>
+        <item>12.000 VND</item>
+        <item>15.000 VND</item>
+    </string-array>
+</resources>
