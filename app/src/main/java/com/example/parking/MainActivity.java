@@ -572,6 +572,7 @@ public class MainActivity extends AppCompatActivity {
                                 long millisDiff = thoiGianRa.getTime() - thoiGianVao.getTime(); // Tính thời gian đỗ xe
                                 long minutesParked = millisDiff / (1000 * 60);
                                 int tienGuiXe = (minutesParked < 60) ? pricePerHour : (int) Math.ceil(minutesParked * (pricePerHour / 60.0));
+                                String tien_done = addCommasToNumber(tienGuiXe);
 
                                 String queryUpdate = "UPDATE startup_baiguixe SET ThoiGianRa = ?, TienGuiXe = ?, AnhXeRa = ? WHERE ID = ?";
                                 try (PreparedStatement psUpdate = connection.prepareStatement(queryUpdate)) {
@@ -583,10 +584,10 @@ public class MainActivity extends AppCompatActivity {
                                     int rowsUpdated = psUpdate.executeUpdate();
                                     runOnUiThread(() -> {
                                         if (rowsUpdated > 0) {
-                                            txtThanhTien.setText(tienGuiXe + " VND");
+                                            txtThanhTien.setText(tien_done + " VND");
                                             Time_in.setText(sdf.format(thoiGianVao)); // Hiển thị thời gian vào
                                             Time_out.setText(formattedExitTime); // Hiển thị giờ ra
-                                            Toast.makeText(getApplicationContext(), "Xe NFC " + id + " thanh toán " + tienGuiXe + " VNĐ", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Xe " + bienSo + " thanh toán " + tienGuiXe + " VNĐ", Toast.LENGTH_SHORT).show();
 
                                             //lấy ảnh xe vào
                                             executorService.execute(() -> {
@@ -677,6 +678,24 @@ public class MainActivity extends AppCompatActivity {
     //endregion
 
     //region other
+    private String addCommasToNumber(int number) {
+        String numStr = Integer.toString(number);  // Chuyển số thành chuỗi
+        StringBuilder result = new StringBuilder();
+
+        int count = 0;
+        for (int i = numStr.length() - 1; i >= 0; i--) {
+            result.append(numStr.charAt(i)); // Thêm từng ký tự vào kết quả
+            count++;
+
+            if (count % 3 == 0 && i != 0) {
+                result.append(","); // Thêm dấu ',' sau mỗi 3 chữ số
+            }
+        }
+
+        return result.reverse().toString(); // Đảo chuỗi lại để đúng thứ tự
+    }
+
+
     private int getSelectedPrice(Spinner spinner) {  // lấy đơn giá từ spinner
         String selectedItem = spinner.getSelectedItem().toString(); // Lấy item được chọn
         String numericValue = selectedItem.replaceAll("[^0-9]", ""); // Lọc chỉ giữ số
