@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 captureImage(capturedImageView_Out);
             }
         });
-        txtID.setOnClickListener(v -> {
+        txtBienSo.setOnClickListener(v -> {
             String idValue = txtID.getText().toString().trim();
             if (!idValue.isEmpty()) {
                 txtBienSo.setText(idValue);
@@ -341,7 +341,6 @@ public class MainActivity extends AppCompatActivity {
                     if (!licensePlate.equals("Không nhận")) {
                         // Sau khi gán biển số, tắt camera
                         stopCamera();
-
                         // Bắt đầu xử lý NFC
                         handleNfcReading();
                     } else {
@@ -372,7 +371,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
         IntentFilter[] intentFilters = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
-
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, null);
     }
 
