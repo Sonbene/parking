@@ -1,5 +1,7 @@
 package com.example.parking;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -11,11 +13,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.AudioManager;
 import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -95,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private byte[] imageBytes;
     private ImageView capturedImageView;
     private ImageView capturedImageView_Out;
+    private TextToSpeech tts;
 
     @SuppressLint({"MissingInflatedId", "CutPasteId", "WrongViewCast"})
     @Override
@@ -129,28 +134,27 @@ public class MainActivity extends AppCompatActivity {
         previewView = findViewById(R.id.previewView);
         recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
         cameraExecutor = Executors.newSingleThreadExecutor();
+        txtID = findViewById(R.id.txtID);
 
-        // Kiểm tra quyền camera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         } else {
-            startCamera();
+            //startCamera();
         }
 
-        // Bắt sự kiện click để chụp ảnh
-//        cameraIcon.setOnClickListener(v -> {
-//            if (btnVao.isSelected()) {
-//                captureImage(capturedImageView);
-//            } else if (btnRa.isSelected()) {
-//                captureImage(capturedImageView_Out);
-//            }
-//        });
+        //chụp ảnh
         previewView.setOnClickListener(v -> {
             if (btnVao.isSelected()) {
                 captureImage(capturedImageView);
             } else if (btnRa.isSelected()) {
                 captureImage(capturedImageView_Out);
+            }
+        });
+        txtID.setOnClickListener(v -> {
+            String idValue = txtID.getText().toString().trim();
+            if (!idValue.isEmpty()) {
+                txtBienSo.setText(idValue);
             }
         });
 
@@ -161,10 +165,8 @@ public class MainActivity extends AppCompatActivity {
             step(); // Gọi hàm step() khi bấm nút
         });
 
-
         //NFC
         nfcExecutor = Executors.newSingleThreadExecutor();
-        txtID = findViewById(R.id.txtID);
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
             Toast.makeText(this, "Thiết bị không hỗ trợ NFC", Toast.LENGTH_LONG).show();
@@ -179,6 +181,35 @@ public class MainActivity extends AppCompatActivity {
         btnRa = findViewById(R.id.btnRa);
         setupMode_InOut();
         addTextWatcher(txtID, txtBienSo);
+
+        //speak
+        tts = new TextToSpeech(this, status -> {
+            for (Locale locale : Locale.getAvailableLocales()) {
+                int result = tts.isLanguageAvailable(locale);
+                if (result == TextToSpeech.LANG_AVAILABLE) {
+                    Log.d("TTS", "Hỗ trợ: " + locale.toString());
+                }
+            }
+            if (status == TextToSpeech.SUCCESS) {
+                int result = tts.setLanguage(Locale.forLanguageTag("vi")); // Thiết lập tiếng Việt
+
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e(TAG, "Ngôn ngữ không được hỗ trợ");
+                    Toast.makeText(MainActivity.this, "Ngôn ngữ TTS không được hỗ trợ", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "TTS Tiếng Việt đã khởi tạo thành công");
+                    //tts.speak("Chào mừng bạn", TextToSpeech.QUEUE_FLUSH, null, "tts_init");
+                }
+            } else {
+                Log.e(TAG, "Khởi tạo TTS thất bại");
+                Toast.makeText(MainActivity.this, "Khởi tạo TTS thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+        // Đảm bảo âm lượng không bị tắt
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (audioManager != null && audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) == 0) {
+            Toast.makeText(this, "Vui lòng tăng âm lượng để nghe TTS", Toast.LENGTH_LONG).show();
+        }
     }
 
     //region xử lí nhận diện biển số
@@ -190,8 +221,13 @@ public class MainActivity extends AppCompatActivity {
                 // Lấy cameraProvider từ future
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();  // Dòng này có thể ném ra ExecutionException hoặc InterruptedException
 
+                runOnUiThread(() -> {
+                    previewView.setVisibility(View.INVISIBLE);
+                    previewView.postDelayed(() -> previewView.setVisibility(View.VISIBLE), 100);
+                });
                 // Hủy bỏ tất cả các kết nối trước đó
                 cameraProvider.unbindAll();
+                imageCapture = null;
             } catch (ExecutionException | InterruptedException e) {
                 Log.e("Camera", "Error stopping camera", e);
                 Thread.currentThread().interrupt();  // Khôi phục trạng thái gián đoạn của luồng
@@ -213,6 +249,14 @@ public class MainActivity extends AppCompatActivity {
                 Preview preview = new Preview.Builder().build();
                 imageCapture = new ImageCapture.Builder().build();
 
+                // Kiểm tra nếu previewView không null mới thiết lập SurfaceProvider
+                if (previewView != null) {
+                    preview.setSurfaceProvider(previewView.getSurfaceProvider());
+                } else {
+                    Log.e("Camera", "previewView is null, cannot start camera.");
+                    return;
+                }
+
                 // Chọn camera sau
                 CameraSelector cameraSelector = new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)
@@ -229,6 +273,10 @@ public class MainActivity extends AppCompatActivity {
 
     @OptIn(markerClass = ExperimentalGetImage.class)
     private void captureImage(ImageView targetImageView) {
+        if (imageCapture == null) {
+            Log.e("Camera", "imageCapture is null, camera might not be started.");
+            return;
+        }
         imageCapture.takePicture(ContextCompat.getMainExecutor(this),
                 new ImageCapture.OnImageCapturedCallback() {
                     @Override
@@ -333,7 +381,8 @@ public class MainActivity extends AppCompatActivity {
             String blockText = block.getText().replaceAll("\\s+", ""); // Xóa khoảng trắng
             Log.d("OCR", "Checking block (cleaned): " + blockText);
 
-            if (blockText.matches("\\d{2,3}[- ]?[A-Z]\\d{3,5}(\\.\\d{2})?")) {
+            if (blockText.matches("\\d{2,3}[- ]?[A-Z]\\d{3,5}(\\.\\d{2})?")||
+                    blockText.matches("\\d{2,3}[- ]?[A-Z]{2}\\s?\\d{3,5}(\\.\\d{2})?")) {
                 Log.d("OCR", "Matched license plate: " + blockText);
                 return blockText;  // Trả về biển số đầy đủ
             } else {
@@ -342,7 +391,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return "Không nhận";
     }
-
 
     private Bitmap scaleBitmapToPreview(Bitmap bitmap) {
         int viewWidth = previewView.getWidth();
@@ -513,8 +561,10 @@ public class MainActivity extends AppCompatActivity {
 
                         int rowsInserted = psInsert.executeUpdate();
                         runOnUiThread(() -> {
+                            Time_in.setText(currentTime);
                             if (rowsInserted > 0) {
-                                Toast.makeText(getApplicationContext(), "Đã thêm xe " + bienSo, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "Đã thêm xe " + bienSo, Toast.LENGTH_SHORT).show();
+                                tts.speak("Xin mời vào", TextToSpeech.QUEUE_FLUSH, null, "tts_init");
                             } else {
                                 Toast.makeText(getApplicationContext(), "Thêm xe thất bại!", Toast.LENGTH_SHORT).show();
                             }
@@ -571,7 +621,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 long millisDiff = thoiGianRa.getTime() - thoiGianVao.getTime(); // Tính thời gian đỗ xe
                                 long minutesParked = millisDiff / (1000 * 60);
-                                int tienGuiXe = (minutesParked < 60) ? pricePerHour : (int) Math.ceil(minutesParked * (pricePerHour / 60.0));
+                                int tien_step1 = (minutesParked < 60) ? pricePerHour : (int) Math.ceil(minutesParked * (pricePerHour / 60.0));
+                                int tienGuiXe = (int) (Math.ceil(tien_step1 / 1000.0) * 1000);
                                 String tien_done = addCommasToNumber(tienGuiXe);
 
                                 String queryUpdate = "UPDATE startup_baiguixe SET ThoiGianRa = ?, TienGuiXe = ?, AnhXeRa = ? WHERE ID = ?";
@@ -587,8 +638,7 @@ public class MainActivity extends AppCompatActivity {
                                             txtThanhTien.setText(tien_done + " VND");
                                             Time_in.setText(sdf.format(thoiGianVao)); // Hiển thị thời gian vào
                                             Time_out.setText(formattedExitTime); // Hiển thị giờ ra
-                                            Toast.makeText(getApplicationContext(), "Xe " + bienSo + " thanh toán " + tienGuiXe + " VNĐ", Toast.LENGTH_SHORT).show();
-
+                                            //Toast.makeText(getApplicationContext(), "Xe " + bienSo + " thanh toán " + tienGuiXe + " VNĐ", Toast.LENGTH_SHORT).show();
                                             //lấy ảnh xe vào
                                             executorService.execute(() -> {
                                                 try (Connection connectionnew = DriverManager.getConnection(URL, USER, PASSWORD)) {  // Mở kết nối mới
@@ -610,6 +660,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 }
 
                                                                 runOnUiThread(() -> capturedImageView.setImageBitmap(bitmap));
+                                                                tts.speak("Chào tạm biệt", TextToSpeech.QUEUE_FLUSH, null, "tts_init");
                                                             } else {
                                                                 Log.e("DatabaseError", "Không tìm thấy ảnh!");
                                                             }
@@ -622,12 +673,14 @@ public class MainActivity extends AppCompatActivity {
 
                                         } else {
                                             Toast.makeText(getApplicationContext(), "Cập nhật thất bại!", Toast.LENGTH_SHORT).show();
+                                            //tts.speak("Cập nhật thất bại", TextToSpeech.QUEUE_FLUSH, null, "tts_init")
                                         }
                                     });
                                 }
 
                             } else {
                                 runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Thẻ / Biển số không hợp lệ", Toast.LENGTH_SHORT).show());
+                                //tts.speak("Thẻ hoặc biển số không hợp lệ", TextToSpeech.QUEUE_FLUSH, null, "tts_init");
                             }
                         }
                     }
@@ -665,13 +718,15 @@ public class MainActivity extends AppCompatActivity {
         String id = txtID.getText().toString().trim();
         String bienSo = txtBienSo.getText().toString().trim();
 
-        if (!id.isEmpty() && !bienSo.isEmpty()) {
+        if (!id.isEmpty() && imageCapture == null) {
+            startCamera(); // Khi có ID, mở camera
+        }
+
+        if (!id.isEmpty() && !bienSo.isEmpty() && !bienSo.equals("Không nhận")) {
             if (btnVao.isSelected()) {
                 updateIntime();
-                //step();
             } else if (btnRa.isSelected()) {
                 updateExitTime();
-                //step();
             }
         }
     }
@@ -691,7 +746,6 @@ public class MainActivity extends AppCompatActivity {
                 result.append(","); // Thêm dấu ',' sau mỗi 3 chữ số
             }
         }
-
         return result.reverse().toString(); // Đảo chuỗi lại để đúng thứ tự
     }
 
@@ -708,9 +762,10 @@ public class MainActivity extends AppCompatActivity {
         txtBienSo.setText("");
         Time_in.setText("");
         Time_out.setText("");
+        imageCapture = null;
         capturedImageView.setImageBitmap(null);
         capturedImageView_Out.setImageBitmap(null);
-        startCamera();
+        stopCamera();
     }
     //endregion
 }

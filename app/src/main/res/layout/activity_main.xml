@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
 
@@ -62,8 +63,8 @@
 
     <ImageView
         android:id="@+id/capturedImageView"
-        android:layout_width="170dp"
-        android:layout_height="150dp"
+        android:layout_width="160dp"
+        android:layout_height="140dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:foreground="@drawable/textview_border"
@@ -72,8 +73,8 @@
 
     <ImageView
         android:id="@+id/capturedImageView_Out"
-        android:layout_width="170dp"
-        android:layout_height="150dp"
+        android:layout_width="160dp"
+        android:layout_height="140dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         android:foreground="@drawable/textview_border"
@@ -83,8 +84,7 @@
     <androidx.camera.view.PreviewView
         android:id="@+id/previewView"
         android:layout_width="370dp"
-        android:layout_height="370dp"
-        android:layout_marginTop="50dp"
+        android:layout_height="350dp"
         android:foreground="@drawable/textview_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,11 +97,12 @@
         android:layout_width="130dp"
         android:layout_height="37dp"
         android:layout_marginStart="20dp"
-        android:layout_marginBottom="188dp"
+        android:layout_marginBottom="185dp"
         android:background="@drawable/border_table"
         android:entries="@array/price_options"
         app:layout_constraintBottom_toBottomOf="@+id/toggleContainer"
-        app:layout_constraintStart_toEndOf="@+id/toggleContainer_mode" />
+        app:layout_constraintStart_toEndOf="@+id/toggleContainer_mode"
+        app:layout_constraintTop_toBottomOf="@+id/capturedImageView_Out" />
 
     <TextView
         android:id="@+id/time_in"
@@ -111,7 +112,7 @@
         android:layout_marginBottom="80dp"
         android:background="@drawable/toggle_button"
         android:gravity="center"
-        android:text="Time In"
+        android:text="Thời gian vào"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -125,7 +126,7 @@
         android:layout_marginBottom="80dp"
         android:background="@drawable/toggle_button"
         android:gravity="center"
-        android:text="Time Out"
+        android:text="Thời gian ra"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -143,7 +144,8 @@
         android:padding="2dp"
         android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/capturedImageView">
 
         <Button
             android:id="@+id/btnVao"
