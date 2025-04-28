@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
         } else {
-            //startCamera();
+            startCamera();
         }
 
         //chụp ảnh
@@ -170,8 +170,20 @@ public class MainActivity extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter == null) {
             Toast.makeText(this, "Thiết bị không hỗ trợ NFC", Toast.LENGTH_LONG).show();
-            finish();
+
+            // 1) Ẩn hẳn khu vực scan NFC (giả sử bạn gom vào một layout)
+
+
+            // 2) Cho phép nhập tay ID nếu cần:
+            txtID.setEnabled(true);
+            txtID.setHint("Nhập ID bằng tay");
+
+            // 3) Kiểm soát để không gọi enableForegroundDispatch(...) khi nfcAdapter == null
+            //    (tức bạn sẽ check nfcAdapter != null trước khi bật/tắt NFC ở onResume/onPause)
+        } else {
+            // bình thường: giữ nguyên enableForegroundDispatch, handleNfcReading(),…
         }
+
 
         //price
         setupSpinner();
@@ -465,16 +477,20 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
-        IntentFilter[] intentFilters = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
-        nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, null);
+        if (nfcAdapter != null) {
+            Intent intent = new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE);
+            IntentFilter[] intentFilters = new IntentFilter[]{new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
+            nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilters, null);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        nfcAdapter.disableForegroundDispatch(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableForegroundDispatch(this);
+        }
     }
 
     @Override
